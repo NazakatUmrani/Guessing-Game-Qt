@@ -2,4 +2,6 @@ A guessing game, which generates a randome sequence of highlights, which follows
 
 Below are some Screenshots attached...
 
-![Screesnhot 1](/Screenshots/01.png?raw=true "Screenshot of Main Window 01")
+![Screenshot 1](/Screenshots/01.png?raw=true "Screenshot of Main Window 01")
+
+![Screenshot_2](/Screenshots/02.png?raw=true "Screenshot of Main Window 02")
