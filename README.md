@@ -11,3 +11,5 @@ Below are some Screenshots attached...
 ![Screenshot_4](/Screenshots/04.png?raw=true "Screenshot of Main Window 04")
 
 ![Screenshot_5](/Screenshots/05.png?raw=true "Screenshot of Main Window 05")
+
+![Screenshot_6](/Screenshots/06.png?raw=true "Screenshot of Main Window 06")

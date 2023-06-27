@@ -6,6 +6,7 @@
 #include <random>
 #include <QChar>
 
+//Function for delay
 void delay(int n)
 {
     QTime dieTime= QTime::currentTime().addSecs(n);
@@ -13,6 +14,7 @@ void delay(int n)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+//Dakrens colors of all circles
 void MainWindow::darkenCircles(){
     for(int i=0; i<9; i++){
         ui->gridLayout->itemAt(i)->widget()->setStyleSheet(QString("QPushButton {"
@@ -38,7 +40,7 @@ void MainWindow::highlightSequence(int i){
     // Generate random numbers
     int randomNum = dist(gen);
 
-    //Highlight Circles
+    //Highlight Circles and Display Emoji
     circleButtons[randomNum]->setStyleSheet(QString("QPushButton {"
                                                     "background-color: %1;"
                                                     "border-radius: 50%;"
@@ -50,7 +52,7 @@ void MainWindow::highlightSequence(int i){
     computerSequence = computerSequence+to_string(randomNum+1);
     delay(1);
 
-    //Remove Highlights
+    //Remove Highlight and emoji
     circleButtons[randomNum]->setStyleSheet(QString("QPushButton {"
                                                     "background-color: %1;"
                                                     "border-radius: 50%;"
@@ -58,6 +60,7 @@ void MainWindow::highlightSequence(int i){
                                                     "}").arg(colorsDarker[randomNum].name()));
     circleButtons[randomNum]->setText(QString(""));
     delay(1);
+    //Recursively call this function
     highlightSequence(i-1);
 }
 
@@ -87,12 +90,11 @@ MainWindow::MainWindow(QWidget *parent)
     colorsDarker[7].setRgb(47, 56, 99);
     colorsDarker[8].setRgb(62, 45, 92);
 
-    int numCircles = sizeof(colors) / sizeof(colors[0]);
-
     // Add circles to the grid layout
     int row = 0;
     int col = 0;
-    for (int i = 0; i < numCircles; i++) {
+    //Create and add circles in gridLayout
+    for (int i = 0; i < 9; i++) {
         // Create a circle button
         QPushButton* circleButton = new QPushButton();
         circleButton->setFixedSize(100, 100);
@@ -102,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
                                             "color: black;"
                                             "}").arg(colors[i].name()));
         circleButton->setFont(QFont("Arial",70));
+
         // Add the circle button to the grid layout
         circleButtons[i] = circleButton;
         ui->gridLayout->addWidget(circleButtons[i], row, col);
@@ -110,22 +113,28 @@ MainWindow::MainWindow(QWidget *parent)
         connect(circleButton, &QPushButton::clicked, this, [=]() {
             if(isUserTurn){
                 isUserTurn = false;
+
+                //Highlight circle and display emoji
                 circleButton->setStyleSheet(QString("QPushButton {"
                                                     "background-color: %1;"
                                                     "border-radius: 50%;"
                                                     "color: black;"
                                                     "}").arg(colors[i].name()));
                 circleButtons[i]->setText(QString(QChar(0xF60A)));
+                //Add index to sequence
                 userSequence = userSequence + to_string(i+1);
                 delay(1);
+                //Darken circle and remove emoji
                 circleButton->setStyleSheet(QString("QPushButton {"
                                                     "background-color: %1;"
                                                     "border-radius: 50%;"
                                                     "color: black;"
                                                     "}").arg(colorsDarker[i].name()));
                 circleButtons[i]->setText(QString(""));
+                //If Sequence are equals
                 if(computerSequence.length()==userSequence.length()){
                     if(computerSequence==userSequence){
+                        //Increase level and update labels
                         levels++;
                         ui->levelLabel->setText(QString::fromStdString("Level: "+to_string(levels)));
                         ui->messageLabel->setText(QString::fromStdString("You got it correct"));
@@ -133,11 +142,13 @@ MainWindow::MainWindow(QWidget *parent)
                         ui->messageLabel->setText(QString::fromStdString("Okay now, get ready for sequence of "+to_string(levels+2)));
                         delay(3);
                         ui->messageLabel->setText(QString::fromStdString("Remember this sequence"));
+                        //Move to next level with more highlights
                         highlightSequence(levels+2);
                         ui->messageLabel->setText(QString::fromStdString("Now your turn, repeat the sequence"));
                         isUserTurn=true;
                     }
                     else{
+                        //If lose reset variables and messages
                         levels=1;
                         computerSequence="";
                         userSequence="";
@@ -169,15 +180,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::on_newGameButton_clicked()
 {
+    //Disable button and update labels
     ui->newGameButton->setDisabled(true);
     ui->messageLabel->setText(QString::fromStdString("Okay let's go, get ready for sequence of "+to_string(levels+2)));
     ui->levelLabel->setText(QString::fromStdString("Level: 1"));
+    //Darken Circles
     darkenCircles();
     delay(3);
     ui->messageLabel->setText(QString::fromStdString("Remember this sequence"));
+    //Highlight circles
     highlightSequence(levels+2);
     ui->messageLabel->setText(QString::fromStdString("Now your turn, repeat the sequence"));
     isUserTurn=true;
