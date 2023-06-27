@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include <QGridLayout>
 #include <QColor>
-#include <QDebug>
 #include <QTime>
 #include <random>
 #include <QChar>
@@ -116,14 +115,43 @@ MainWindow::MainWindow(QWidget *parent)
                                                     "border-radius: 50%;"
                                                     "color: black;"
                                                     "}").arg(colors[i].name()));
+                circleButtons[i]->setText(QString(QChar(0xF60A)));
+                userSequence = userSequence + to_string(i+1);
                 delay(1);
                 circleButton->setStyleSheet(QString("QPushButton {"
                                                     "background-color: %1;"
                                                     "border-radius: 50%;"
                                                     "color: black;"
                                                     "}").arg(colorsDarker[i].name()));
-                isUserTurn = true;
-                qDebug() << "Circle" << i+1 << "clicked!";
+                circleButtons[i]->setText(QString(""));
+                if(computerSequence.length()==userSequence.length()){
+                    if(computerSequence==userSequence){
+                        levels++;
+                        ui->levelLabel->setText(QString::fromStdString("Level: "+to_string(levels)));
+                        ui->messageLabel->setText(QString::fromStdString("You got it correct"));
+                        delay(1);
+                        ui->messageLabel->setText(QString::fromStdString("Okay now, get ready for sequence of "+to_string(levels+2)));
+                        delay(3);
+                        ui->messageLabel->setText(QString::fromStdString("Remember this sequence"));
+                        highlightSequence(levels+2);
+                        ui->messageLabel->setText(QString::fromStdString("Now your turn, repeat the sequence"));
+                        isUserTurn=true;
+                    }
+                    else{
+                        levels=1;
+                        computerSequence="";
+                        userSequence="";
+                        ui->messageLabel->setText(QString::fromStdString("You Failed"));
+                        delay(2);
+                        ui->levelLabel->setText(QString::fromStdString(""));
+                        ui->messageLabel->setText(QString::fromStdString("Press Button to start game"));
+                        isUserTurn=false;
+                        ui->newGameButton->setDisabled(false);
+                    }
+                }
+                else{
+                    isUserTurn = true;
+                }
             }
         });
 
@@ -145,11 +173,12 @@ MainWindow::~MainWindow()
 void MainWindow::on_newGameButton_clicked()
 {
     ui->newGameButton->setDisabled(true);
-    ui->messageLabel->setText(QString::fromStdString("Okay let's go, ready for sequence of "+to_string(levels+2)+"..."));
+    ui->messageLabel->setText(QString::fromStdString("Okay let's go, get ready for sequence of "+to_string(levels+2)));
     ui->levelLabel->setText(QString::fromStdString("Level: 1"));
     darkenCircles();
     delay(3);
+    ui->messageLabel->setText(QString::fromStdString("Remember this sequence"));
     highlightSequence(levels+2);
-    qDebug() << computerSequence.data();
+    ui->messageLabel->setText(QString::fromStdString("Now your turn, repeat the sequence"));
+    isUserTurn=true;
 }
-
